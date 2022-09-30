@@ -1,11 +1,13 @@
 import csv
-import numpy as np
 from datetime import datetime
 
 
 def parse(logspath, resultpath):
     logs = parse_logs(logspath)
     results=parse_result(resultpath)
+    return logs, results
+
+
 
 
 def parse_logs(logspath):
@@ -13,6 +15,7 @@ def parse_logs(logspath):
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(reader, None)
         logs=[]
+
         for row in reader:
             category=merge_var(row[3],row[4])
             if (category is None):
@@ -28,13 +31,16 @@ def parse_logs(logspath):
 def parse_result(resultpath):
     with open(resultpath, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+        results=[]
         next(reader, None)
-        result=[]
+
         for row in reader:
-            points=row[1]
+            points=row[3]
+            deelgenomen=row[5]
             points=int(float(points.replace(',','.')))
-            result.append([int(row[0]),points])
-        return result
+            if (deelgenomen==''):
+                results.append([int(row[0]),points])
+    return results
 
 
 def merge_var(action,resource):
@@ -50,5 +56,5 @@ def merge_var(action,resource):
         return 'discussion'
     return None
 
-parse("data/logs_WT.csv","data/Resultaten_WT.csv")
-
+if __name__ == '__main__':
+    parse("data/logs_WT.csv","data/Resultaten_WT.csv")
