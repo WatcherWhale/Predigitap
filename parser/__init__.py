@@ -4,7 +4,7 @@ from datetime import datetime
 
 def parse(logspath, resultpath):
     logs = parse_logs(logspath)
-    results=parse_result(resultpath)
+    results=parse_results(resultpath)
     return logs, results
 
 
@@ -28,7 +28,7 @@ def parse_logs(logspath):
 
     return logs
 
-def parse_result(resultpath):
+def parse_results(resultpath):
     with open(resultpath, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=';', quotechar='|')
         results=[]
