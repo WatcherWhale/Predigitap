@@ -39,25 +39,15 @@ def parse_results(resultpath):
 
     return results
 
-def merge_var(action, resource) -> int:
-    if(action=='updated'):
-        #return 'completion'
-        return 0
+def merge_var(action) -> int:
+    action=action.lstrip("\\")
+    action=action.replace("\\","_")
 
-    if (action=='downloaded'):
-        #return 'downloaded'
-        return 1
-
-    if (action=='viewed'and resource=='course'):
-        #return 'course'
-        return 2
-
-    if (action=='viewed'and resource=='course_module'):
-        #return 'course_module'
-        return 3
-
-    if (action=='viewed'and resource=='discussion'):
-        #return 'discussion'
-        return 4
-
-    return None
+    eventname=[]
+    with open('./datasets/eventnames.txt', 'r') as file:
+      for line in file:
+        eventname.append(line.strip())
+    try:
+      return eventname.index(action)
+    except ValueError:
+        return None
