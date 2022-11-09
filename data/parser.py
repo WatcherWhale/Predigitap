@@ -9,33 +9,55 @@ def parse(logspath, resultpath):
 def parse_logs(logspath):
     with open(logspath, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        next(reader, None)
+        header_row = next(reader, None)
+
+        userid_col = header_row.index("userid")
+        action_col = header_row.index("action")
+        target_col = header_row.index("target")
+        time_col = header_row.index("timecreated")
+
         logs=[]
 
         for row in reader:
-            category=merge_var(row[3],row[4])
+            category = merge_var(row[action_col], row[target_col])
 
             if (category is None):
                 continue
 
-            logs.append([int(float(row[12])), category, float(row[17])])
+            logs.append([int(float(row[userid_col])), category, float(row[time_col])])
 
     return logs
 
 def parse_results(resultpath):
     with open(resultpath, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+
         results=[]
-        next(reader, None)
+
+        header_row = next(reader, None)
+
+        id_col = header_row.index("id")
+        result_col = header_row.index("Numerische quotering 1")
+        absentcode1_col = header_row.index("Ingevoerde afwezigheidscode 1")
+        absentcode2_col = header_row.index("Ingevoerde afwezigheidscode 2")
 
         for row in reader:
-            points=row[3]
-            deelgenomen1 = row[2]
-            deelgenomen2 = row[5]
-            points=int(float(points.replace(',','.')))
+            try:
+                points = row[result_col]
+                if points == "":
+                    points = "0.0"
+                points = int(float(points.replace(',','.')))
 
-            if (deelgenomen1 == "" and deelgenomen2 == ""):
-                results.append([int(row[0]), points])
+                deelgenomen1 = row[absentcode1_col]
+                deelgenomen2 = row[absentcode2_col]
+
+                if (deelgenomen1 == "" and deelgenomen2 == ""):
+                    results.append([int(row[id_col]), points])
+            except:
+                print(row[id_col], "has been skipped due to parsing errors.")
+                print(row[result_col])
+                print(row[absentcode1_col])
+                print(row[absentcode2_col])
 
     return results
 
