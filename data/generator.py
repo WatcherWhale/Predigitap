@@ -2,7 +2,7 @@ from csv import writer
 import random
 import numpy as np
 
-from data.parser import parse
+from data.parser import parse, get_eventnames
 
 def generateDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate: float, amount = 10) -> (list, list):
     logs, results = parse(logsPath, resultsPath)
@@ -85,11 +85,14 @@ def timedEntries(amount, actions, start: float, stop: float):
 def fullDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate: float):
     logs, results = parse(logsPath, resultsPath)
 
-    inputSet = [["completion", "downloaded", "course", "course_module", "discussion", "result"]]
+    names = get_eventnames()
+    names.append("results")
+    inputSet = [names]
     outputSet = []
 
     for id, result in results:
-        inEntry = [0, 0, 0, 0, 0, result]
+        inEntry = [0 for _ in range(len(names) + 1 ) ]
+        inEntry[len(inEntry) - 1] = result
         for id, category, time in getActions(id, logs):
             if time > stopDate:
                 continue

@@ -1,4 +1,6 @@
 import csv
+import json
+
 from datetime import datetime
 
 def parse(logspath, resultpath):
@@ -12,14 +14,14 @@ def parse_logs(logspath):
         header_row = next(reader, None)
 
         userid_col = header_row.index("userid")
-        action_col = header_row.index("action")
+        action_col = header_row.index("eventname")
         target_col = header_row.index("target")
         time_col = header_row.index("timecreated")
 
         logs=[]
 
         for row in reader:
-            category = merge_var(row[action_col], row[target_col])
+            category = merge_var(row[action_col])
 
             if (category is None):
                 continue
@@ -64,12 +66,16 @@ def parse_results(resultpath):
 def merge_var(action) -> int:
     action=action.lstrip("\\")
     action=action.replace("\\","_")
+    
+    events = get_events()
+    names = get_eventnames()
+    for key in names:
+        if action in events[key]:
+            return names.index(key)
 
-    eventname=[]
-    with open('./datasets/eventnames.txt', 'r') as file:
-      for line in file:
-        eventname.append(line.strip())
-    try:
-      return eventname.index(action)
-    except ValueError:
-        return None
+def get_eventnames():
+    return list(get_events().keys())
+    
+def get_events():
+    with open("data/events.json") as file:
+        return json.load(file)
