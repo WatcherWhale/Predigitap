@@ -24,7 +24,7 @@ def generateDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate:
 
         for entry in entries:
             inputSet.append(entry)
-
+            
             outputSet.append([result_z])
 
     return inputSet, outputSet, mean, std
@@ -54,13 +54,15 @@ def randomentries(amount, actions, start: float, stop: float):
     entries = []
     for _ in range(amount):
         fraction = random.random()
-        inEntry = [0, 0, 0, 0, 0, fraction]
+        
+        inEntry = np.zeros(17)
+        inEntry[len(inEntry) - 1] = fraction
 
         for id, category, time in actions:
             timeFraction = timeToFraction(time, start, stop)
             if timeFraction > fraction:
                 continue
-            inEntry[category] += 1
+            inEntry[int(category)] += 1
 
         entries.append(inEntry)
 
@@ -76,7 +78,7 @@ def timedEntries(amount, actions, start: float, stop: float):
             timeFraction = timeToFraction(time, start, stop)
             if timeFraction > fraction:
                 continue
-            inEntry[category] += 1
+            inEntry[int(category)] += 1
 
         entries.append(inEntry)
 
@@ -116,7 +118,7 @@ def loadDataSet(inputPath, outputPath):
     pass
 
 def getActions(id, logs):
-    return list(filter(lambda x: x[0] == id, logs))
+    return np.array(list(filter(lambda x: x[0] == id, logs)))
 
 def fractionToTime(fraction: float, start: float, stop: float) -> float:
     return (fraction * (stop - start)) + start
