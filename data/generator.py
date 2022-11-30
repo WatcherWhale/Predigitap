@@ -15,21 +15,22 @@ def generateDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate:
     
     mean = np.mean(cats_r)
     std = np.std(cats_r)
+    
 
     for id, result in results:
         actions = getActions(id, logs)
         entries = randomentries(amount, actions, startDate, stopDate)
         
         result_z = (resultToCategory(result) - mean) / std
-
+        print(result_z)
         for entry in entries:
             inputSet.append(entry)
             
             outputSet.append([result_z])
-
+    
     return inputSet, outputSet, mean, std
 
-def timedDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate: float, amount = 10):
+def timedDataSet(logsPath: str, resultsPath: str, amount = 10):
     logs, results = parse(logsPath, resultsPath)
 
     inputSet = [[] for _ in range(amount + 1)]
@@ -54,7 +55,7 @@ def randomentries(amount, actions, start: float, stop: float):
     entries = []
     for _ in range(amount):
         fraction = random.random()
-        
+
         inEntry = np.zeros(17)
         inEntry[len(inEntry) - 1] = fraction
 
@@ -128,3 +129,27 @@ def timeToFraction(time: float, start: float, stop: float) -> float:
 
 def resultToCategory(r):
     return np.where(r < 8, 1, 0) + np.where((r >= 8) & (r <= 12), 2, 0) + np.where(r > 12, 3, 0)
+
+
+def cathegoryfunction(logsPath: str, resultsPath: str, amount = 10) -> (list, list):
+    logs, results = parse(logsPath, resultsPath)
+
+    result_r= np.array(results)[:,1]
+
+    result_cat=[]
+    test=resultToCategory(result_r)
+    for i in range(len(test)):
+        result = [0, 0, 0]
+
+        if test[i] == 1:
+            result[0] += 1
+        elif test[i] == 2:
+            result[1] += 1
+        elif test[i] == 3:
+            result[2] += 1
+
+        result_cat.append(result)
+
+        #result[int(resultToCategory(result_r))] = 1
+    return result_cat
+
