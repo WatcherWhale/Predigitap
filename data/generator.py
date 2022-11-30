@@ -9,27 +9,27 @@ def generateDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate:
 
     inputSet = []
     outputSet = []
-    
+
     results_r = np.array(results)[:,1]
     cats_r = resultToCategory(results_r)
-    
+
     mean = np.mean(cats_r)
     std = np.std(cats_r)
-    
+
 
     for id, result in results:
         actions = getActions(id, logs)
         entries = randomentries(amount, actions, startDate, stopDate)
-        
+
         result_z = (resultToCategory(result) - mean) / std
         for entry in entries:
             inputSet.append(entry)
-            
+
             outputSet.append([result_z])
-    
+
     return inputSet, outputSet, mean, std
 
-def timedDataSet(logsPath: str, resultsPath: str, amount = 10):
+def timedDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate: float, amount = 10):
     logs, results = parse(logsPath, resultsPath)
 
     inputSet = [[] for _ in range(amount + 1)]
