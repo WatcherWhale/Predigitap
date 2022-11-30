@@ -22,7 +22,6 @@ def generateDataSet(logsPath: str, resultsPath: str, startDate: float, stopDate:
         entries = randomentries(amount, actions, startDate, stopDate)
         
         result_z = (resultToCategory(result) - mean) / std
-        print(result_z)
         for entry in entries:
             inputSet.append(entry)
             
